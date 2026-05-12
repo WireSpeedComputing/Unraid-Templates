@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>mcp-memory</Name>
+  <Repository>doobidoo/mcp-memory-service:10.49.3-slim</Repository>
+  <Registry>https://hub.docker.com/r/doobidoo/mcp-memory-service</Registry>
+  <Network>Container:tailscale-mcpmemory</Network>
+  <MyIP/>
+  <Shell>bash</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/WireSpeedComputing/Unraid-Templates/issues</Support>
+  <Project>https://github.com/doobidoo/mcp-memory-service</Project>
+  <Overview>Persistent AI memory service with semantic search. SQLite-vec backend, HTTP/SSE transport. Tailscale sidecar variant -- no published ports, accessible via Tailscale overlay network. REQUIRES a sidecar named exactly tailscale-mcpmemory deployed first.</Overview>
+  <Category>Productivity: AI:</Category>
+  <WebUI/>
+  <TemplateURL>https://raw.githubusercontent.com/WireSpeedComputing/Unraid-Templates/main/mcp-memory/mcp-memory-tailscale.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/WireSpeedComputing/Unraid-Templates/main/icons/mcp-memory.png</Icon>
+  <ExtraParams>--restart=unless-stopped --health-cmd="curl -sf http://localhost:8000/api/health || exit 1" --health-interval=30s --health-timeout=5s --health-retries=3 --health-start-period=30s</ExtraParams>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires>**CRITICAL: A Tailscale sidecar container named EXACTLY `tailscale-mcpmemory` must be deployed BEFORE this template will start.** Deploy the generic tailscale-sidecar template first, but rename the container from the default `tailscale-sidecar` to `tailscale-mcpmemory` and rename the state path from `/mnt/user/appdata/tailscale-sidecar/` to `/mnt/user/appdata/tailscale-mcpmemory/`. This container shares the sidecar's network namespace via `--network=container:tailscale-mcpmemory`. See docs/TAILSCALE_SIDECAR_GUIDE.md for the full pattern.</Requires>
+  <Description>
+    Deploys doobidoo/mcp-memory-service with SQLite-vec backend, sharing the network namespace
+    of a Tailscale sidecar container. No ports are published to the host. The service is reachable
+    only via the Tailscale overlay network at the sidecar's Tailscale IP on port 8000.
+
+    ============================================================
+    REQUIRED RENAME BEFORE DEPLOYMENT
+    ============================================================
+    The tailscale-sidecar template ships with default container name `tailscale-sidecar`.
+    This mcp-memory template references `Container:tailscale-mcpmemory`.
+    You MUST rename the sidecar container (and its state path) to `tailscale-mcpmemory`
+    before deploying this template, OR edit the Network field of this template to
+    match the actual name of your sidecar.
+
+    If you skip this step, Docker will report "container tailscale-mcpmemory not found"
+    and the container will fail to start.
+    ============================================================
+
+    Generate an API key before starting: openssl rand -base64 48
+
+    Reach the WebUI/dashboard at http://&lt;sidecar-tailscale-ip&gt;:8000 from any device on
+    your tailnet. Find the IP in the Tailscale admin console under the hostname you set
+    as TS_HOSTNAME on the sidecar.
+
+    First boot downloads a ~90MB ONNX embedding model -- can appear to hang for several
+    minutes. Watch the container log for progress.
+
+    Healthcheck queries localhost:8000/api/health every 30 seconds. localhost works
+    because this container shares the sidecar's network namespace.
+  </Description>
+
+  <!-- No port publish -- traffic goes through Tailscale sidecar -->
+
+  <!-- Volumes -->
+  <Config Name="Data Directory" Target="/app/data" Default="/mnt/user/appdata/mcp-memory/data" Mode="rw" Description="SQLite-vec database directory. Contains memory.db and WAL files." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/mcp-memory/data</Config>
+  <Config Name="Backup Directory" Target="/app/backups" Default="/mnt/user/appdata/mcp-memory/backups" Mode="rw" Description="Nightly SQLite dump output. Point host-level backup tools here." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/mcp-memory/backups</Config>
+
+  <!-- Required Environment -->
+  <Config Name="MCP API Key" Target="MCP_API_KEY" Default="" Mode="" Description="Bearer token for all requests. Generate with: openssl rand -base64 48" Type="Variable" Display="always" Required="true" Mask="true"></Config>
+
+  <!-- Standard Environment -->
+  <Config Name="PUID" Target="PUID" Default="99" Mode="" Description="User ID. Default 99 (nobody) is correct for Unraid." Type="Variable" Display="advanced" Required="false" Mask="false">99</Config>
+  <Config Name="PGID" Target="PGID" Default="100" Mode="" Description="Group ID. Default 100 (users) is correct for Unraid." Type="Variable" Display="advanced" Required="false" Mask="false">100</Config>
+  <Config Name="Timezone" Target="TZ" Default="America/New_York" Mode="" Description="Container timezone." Type="Variable" Display="advanced" Required="false" Mask="false">America/New_York</Config>
+
+  <!-- Service Configuration -->
+  <Config Name="HTTP Enabled" Target="MCP_HTTP_ENABLED" Default="true" Mode="" Description="Enable HTTP server. Must be true." Type="Variable" Display="advanced" Required="true" Mask="false">true</Config>
+  <Config Name="HTTP Port (internal)" Target="MCP_HTTP_PORT" Default="8000" Mode="" Description="Internal listening port. Accessible via Tailscale sidecar IP." Type="Variable" Display="advanced" Required="false" Mask="false">8000</Config>
+  <Config Name="Storage Backend" Target="MCP_MEMORY_STORAGE_BACKEND" Default="sqlite_vec" Mode="" Description="Vector backend. sqlite_vec is recommended." Type="Variable" Display="advanced" Required="false" Mask="false">sqlite_vec</Config>
+  <Config Name="SQLite Path" Target="MCP_MEMORY_SQLITE_PATH" Default="/app/data/memory.db" Mode="" Description="Path to SQLite database inside container." Type="Variable" Display="advanced" Required="false" Mask="false">/app/data/memory.db</Config>
+  <Config Name="Backups Path" Target="MCP_MEMORY_BACKUPS_PATH" Default="/app/backups" Mode="" Description="Container path for backup dumps." Type="Variable" Display="advanced" Required="false" Mask="false">/app/backups</Config>
+  <Config Name="Log Level" Target="LOG_LEVEL" Default="INFO" Mode="" Description="Log verbosity. INFO for normal, DEBUG for troubleshooting." Type="Variable" Display="advanced" Required="false" Mask="false">INFO</Config>
+</Container>

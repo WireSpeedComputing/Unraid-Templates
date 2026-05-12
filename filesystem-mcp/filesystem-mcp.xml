@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>filesystem-mcp</Name>
+  <Repository>mekayelanik/filesystem-mcp:stable</Repository>
+  <Registry>https://hub.docker.com/r/mekayelanik/filesystem-mcp</Registry>
+  <Network>Container:tailscale-filesystem-mcp</Network>
+  <MyIP/>
+  <Shell>bash</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/WireSpeedComputing/Unraid-Templates/issues</Support>
+  <Project>https://github.com/mekayelanik/filesystem-mcp</Project>
+  <Overview>MCP filesystem server with Streamable HTTP transport (community wrapper around the official MCP filesystem server). Exposes directories to AI clients (Claude Desktop, Code) as MCP file tools. Tailscale sidecar variant -- REQUIRES a sidecar named exactly tailscale-filesystem-mcp deployed first.</Overview>
+  <Category>Productivity: AI:</Category>
+  <WebUI/>
+  <TemplateURL>https://raw.githubusercontent.com/WireSpeedComputing/Unraid-Templates/main/filesystem-mcp/filesystem-mcp.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/WireSpeedComputing/Unraid-Templates/main/icons/filesystem-mcp.png</Icon>
+  <ExtraParams>--restart=unless-stopped</ExtraParams>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires>**CRITICAL: A Tailscale sidecar container named EXACTLY `tailscale-filesystem-mcp` must be deployed BEFORE this template will start.** Deploy the generic tailscale-sidecar template first, but rename the container from the default `tailscale-sidecar` to `tailscale-filesystem-mcp` and rename the state path accordingly. This container shares the sidecar's network namespace via `--network=container:tailscale-filesystem-mcp`. See docs/TAILSCALE_SIDECAR_GUIDE.md.</Requires>
+  <Description>
+    Wraps the official MCP filesystem server (modelcontextprotocol/servers) with Streamable HTTP
+    transport (SHTTP). The official server speaks stdio only; this community wrapper exposes it
+    over HTTP so the Tailscale sidecar pattern can carry the traffic.
+
+    Exposes mounted directories as MCP file tools (read, write, list, move, search).
+    Shares the network namespace of a Tailscale sidecar -- no ports published to host.
+
+    ============================================================
+    REQUIRED RENAME BEFORE DEPLOYMENT
+    ============================================================
+    The tailscale-sidecar template ships with default container name `tailscale-sidecar`.
+    This filesystem-mcp template references `Container:tailscale-filesystem-mcp`.
+    You MUST rename the sidecar container (and its state path) to `tailscale-filesystem-mcp`
+    before deploying this template, OR edit the Network field of this template to
+    match the actual name of your sidecar.
+    ============================================================
+
+    Mount at least one host directory under /projects/ inside the container.
+    The container will exit if /projects/ is empty.
+
+    Upstream image source: https://github.com/mekayelanik/filesystem-mcp
+  </Description>
+
+  <!-- No port publish -- traffic goes through Tailscale sidecar -->
+
+  <!-- Volumes: mount your data directories under /projects/ -->
+  <Config Name="Data Directory" Target="/projects/data" Default="/mnt/user/appdata/filesystem-mcp/data" Mode="rw" Description="Primary directory to expose via MCP. Must be a subdirectory of /projects/ inside the container. The container exits if /projects/ is empty. Add more Path entries to expose additional directories (e.g., /projects/wiki, /projects/notes)." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/filesystem-mcp/data</Config>
+
+  <!-- Environment -->
+  <Config Name="HTTP Port" Target="PORT" Default="8001" Mode="" Description="Internal HTTP port for MCP Streamable HTTP endpoint. Accessible via Tailscale sidecar IP at this port." Type="Variable" Display="always" Required="true" Mask="false">8001</Config>
+  <Config Name="Protocol" Target="PROTOCOL" Default="SHTTP" Mode="" Description="Transport protocol. SHTTP (Streamable HTTP) is recommended. Also supports SSE and WS." Type="Variable" Display="always" Required="true" Mask="false">SHTTP</Config>
+  <Config Name="PUID" Target="PUID" Default="99" Mode="" Description="User ID. Default 99 (nobody) is correct for Unraid." Type="Variable" Display="advanced" Required="false" Mask="false">99</Config>
+  <Config Name="PGID" Target="PGID" Default="100" Mode="" Description="Group ID. Default 100 (users) is correct for Unraid." Type="Variable" Display="advanced" Required="false" Mask="false">100</Config>
+  <Config Name="Timezone" Target="TZ" Default="America/New_York" Mode="" Description="Container timezone." Type="Variable" Display="advanced" Required="false" Mask="false">America/New_York</Config>
+  <Config Name="CORS Origins" Target="CORS" Default="*" Mode="" Description="Allowed CORS origins. Use * for development, restrict in production." Type="Variable" Display="advanced" Required="false" Mask="false">*</Config>
+</Container>

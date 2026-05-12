@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>tailscale-sidecar</Name>
+  <Repository>tailscale/tailscale:stable</Repository>
+  <Registry>https://hub.docker.com/r/tailscale/tailscale</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/WireSpeedComputing/Unraid-Templates/issues</Support>
+  <Project>https://tailscale.com</Project>
+  <Overview>Generic Tailscale sidecar container. Joins your Tailscale network and provides overlay-network access for a paired service container that shares its network namespace. **You MUST rename this container per service before deploying** (e.g., tailscale-mcpmemory). Deploying two with the default name and state path will collide.</Overview>
+  <Category>Network:Other</Category>
+  <WebUI/>
+  <TemplateURL>https://raw.githubusercontent.com/WireSpeedComputing/Unraid-Templates/main/tailscale-sidecar/tailscale-sidecar.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/WireSpeedComputing/Unraid-Templates/main/icons/tailscale-sidecar.png</Icon>
+  <ExtraParams>--restart=unless-stopped</ExtraParams>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Description>
+    Generic Tailscale sidecar for the WireSpeed MCP stack. This container joins your
+    Tailscale network and provides overlay-network access. A paired service container
+    (mcp-memory, filesystem-mcp, etc.) shares this container's network namespace via
+    --network=container:this-container-name.
+
+    ============================================================
+    CRITICAL: RENAME BEFORE DEPLOYMENT
+    ============================================================
+    This template ships with the GENERIC default name `tailscale-sidecar` and the GENERIC
+    default state path `/mnt/user/appdata/tailscale-sidecar/`. If you deploy two services
+    using these defaults without renaming, BOTH will try to claim the same Tailscale node
+    identity and write to the same state directory. The second deployment will fail or
+    overwrite the first.
+
+    Per service:
+      1. Rename the container from `tailscale-sidecar` to a service-specific name
+         (e.g., `tailscale-mcpmemory`, `tailscale-filesystem-mcp`, `tailscale-unraidmcp`).
+      2. Rename the host state path to match
+         (e.g., `/mnt/user/appdata/tailscale-mcpmemory/`).
+      3. Set TS_HOSTNAME to your desired Tailscale hostname.
+      4. Generate a fresh, single-use auth key for THIS service and paste into TS_AUTHKEY.
+    ============================================================
+
+    BEFORE DEPLOYING:
+    1. Generate a Tailscale auth key at https://login.tailscale.com/admin/settings/keys
+       (Reusable: no, Ephemeral: no, Expiration: 90 days)
+    2. Rename the container and state path per the warning above.
+    3. Set TS_HOSTNAME.
+    4. Paste your auth key into TS_AUTHKEY.
+
+    AFTER FIRST BOOT:
+    - The auth key is consumed on first boot. The node persists via the state directory.
+    - In the Tailscale admin console, **disable key expiry** on this device (service
+      accounts that never refresh credentials will disconnect at the 180-day mark if
+      key expiry remains enabled).
+    - If you used a free-tier trial, downgrade explicitly in the admin console before
+      or shortly after trial end. Tailscale does not auto-downgrade.
+  </Description>
+
+  <!-- Volumes -->
+  <Config Name="Tailscale State" Target="/state" Default="/mnt/user/appdata/tailscale-sidecar/" Mode="rw" Description="Persistent Tailscale state. RENAME the host path to match your renamed container (e.g., /mnt/user/appdata/tailscale-mcpmemory/). Two sidecars sharing this path will collide." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/tailscale-sidecar/</Config>
+
+  <!-- Environment -->
+  <Config Name="Tailscale Auth Key" Target="TS_AUTHKEY" Default="" Mode="" Description="One-time auth key from Tailscale admin console. Consumed on first boot. Generate per-service; do not reuse across deployments." Type="Variable" Display="always" Required="true" Mask="true"></Config>
+  <Config Name="Tailscale Hostname" Target="TS_HOSTNAME" Default="tailscale-sidecar" Mode="" Description="Hostname on your Tailscale network. Use something descriptive (e.g., mcp-memory, filesystem-mcp). This is the name you will see in the Tailscale admin console." Type="Variable" Display="always" Required="true" Mask="false">tailscale-sidecar</Config>
+  <Config Name="Userspace Mode" Target="TS_USERSPACE" Default="true" Mode="" Description="Run Tailscale in userspace networking mode. Recommended for Docker." Type="Variable" Display="advanced" Required="false" Mask="false">true</Config>
+  <Config Name="Auth Once" Target="TS_AUTH_ONCE" Default="true" Mode="" Description="Authenticate once, then persist via state directory. Recommended." Type="Variable" Display="advanced" Required="false" Mask="false">true</Config>
+  <Config Name="State Directory" Target="TS_STATE_DIR" Default="/state" Mode="" Description="Internal path for Tailscale state. Must match the volume mount target." Type="Variable" Display="advanced" Required="false" Mask="false">/state</Config>
+  <Config Name="Extra Args" Target="TS_EXTRA_ARGS" Default="" Mode="" Description="Additional Tailscale CLI arguments. Usually leave empty." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+  <Config Name="Timezone" Target="TZ" Default="America/New_York" Mode="" Description="Container timezone." Type="Variable" Display="advanced" Required="false" Mask="false">America/New_York</Config>
+</Container>

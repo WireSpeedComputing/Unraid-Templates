@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!-- SCAFFOLD: Copy this file to <app-name>/<app-name>.xml and fill in all TODO fields. -->
+<!-- See docs/ADDING_NEW_TEMPLATES.md for the full conventions and walkthrough. -->
+<Container version="2">
+  <Name>TODO-container-name</Name>
+  <Repository>TODO-image:TODO-tag</Repository>
+  <Registry>https://hub.docker.com/r/TODO-image</Registry>
+  <Network>Container:TODO-sidecar-name</Network>
+  <MyIP/>
+  <Shell>bash</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/WireSpeedComputing/Unraid-Templates/issues</Support>
+  <Project>TODO-upstream-project-url</Project>
+  <Overview>TODO-one-sentence-description. Tailscale sidecar variant -- deploy the TODO-sidecar-name sidecar FIRST.</Overview>
+  <Category>Productivity: AI:</Category>
+  <WebUI/>
+  <TemplateURL>https://raw.githubusercontent.com/WireSpeedComputing/Unraid-Templates/main/TODO-app-name/TODO-app-name.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/WireSpeedComputing/Unraid-Templates/main/icons/TODO-app-name.png</Icon>
+  <ExtraParams>--restart=unless-stopped</ExtraParams>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires>Deploy the TODO-sidecar-name sidecar container BEFORE this one. Rename the generic tailscale-sidecar to match.</Requires>
+  <Description>
+    TODO-detailed-description.
+
+    PREREQUISITE: Deploy the TODO-sidecar-name sidecar first.
+    See docs/TAILSCALE_SIDECAR_GUIDE.md for the deployment pattern.
+  </Description>
+
+  <!-- TODO: Add volumes -->
+  <Config Name="TODO Data Directory" Target="/app/data" Default="/mnt/user/appdata/TODO-container-name/data" Mode="rw" Description="TODO-description" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/TODO-container-name/data</Config>
+
+  <!-- TODO: Add environment variables -->
+  <Config Name="PUID" Target="PUID" Default="99" Mode="" Description="User ID. Default 99 (nobody) for Unraid." Type="Variable" Display="advanced" Required="false" Mask="false">99</Config>
+  <Config Name="PGID" Target="PGID" Default="100" Mode="" Description="Group ID. Default 100 (users) for Unraid." Type="Variable" Display="advanced" Required="false" Mask="false">100</Config>
+  <Config Name="Timezone" Target="TZ" Default="America/New_York" Mode="" Description="Container timezone." Type="Variable" Display="advanced" Required="false" Mask="false">America/New_York</Config>
+</Container>

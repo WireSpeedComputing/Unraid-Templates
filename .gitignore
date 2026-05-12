@@ -1,0 +1,18 @@
+# Claude Code local settings
+.claude/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor leftovers
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Python (placeholder icon generator)
+__pycache__/
+*.pyc
