@@ -4,7 +4,7 @@ MCP filesystem server with Streamable HTTP (SHTTP) transport. Exposes mounted ho
 
 Image: `mekayelanik/filesystem-mcp:stable`
 
-Upstream image: <https://github.com/mekayelanik/filesystem-mcp>
+Upstream image: <https://github.com/mekayelanik/filesystem-mcp-docker>
 
 Upstream MCP filesystem server (the underlying implementation): <https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem>
 

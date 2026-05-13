@@ -41,7 +41,7 @@ When reporting, include:
 
 - Vulnerabilities in the upstream container images. Report those to the upstream maintainer:
   - mcp-memory-service: <https://github.com/doobidoo/mcp-memory-service>
-  - filesystem-mcp (community wrapper): <https://github.com/mekayelanik/filesystem-mcp>
+  - filesystem-mcp (community wrapper): <https://github.com/mekayelanik/filesystem-mcp-docker>
   - The underlying MCP filesystem server: <https://github.com/modelcontextprotocol/servers>
   - Tailscale: <https://tailscale.com/security>
 - Vulnerabilities in Unraid, Docker, Cloudflare, or any third-party identity provider. Report to that vendor.

@@ -8,7 +8,7 @@
   <Shell>bash</Shell>
   <Privileged>false</Privileged>
   <Support>https://github.com/WireSpeedComputing/Unraid-Templates/issues</Support>
-  <Project>https://github.com/mekayelanik/filesystem-mcp</Project>
+  <Project>https://github.com/mekayelanik/filesystem-mcp-docker</Project>
   <Overview>MCP filesystem server with Streamable HTTP transport (community wrapper around the official MCP filesystem server). Exposes directories to AI clients (Claude Desktop, Code) as MCP file tools. Tailscale sidecar variant -- REQUIRES a sidecar named exactly tailscale-filesystem-mcp deployed first.</Overview>
   <Category>Productivity: AI:</Category>
   <WebUI/>
